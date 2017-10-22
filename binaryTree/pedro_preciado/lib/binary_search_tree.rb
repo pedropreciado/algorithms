@@ -59,12 +59,14 @@ class BinarySearchTree
   end
 
   def in_order_traversal(tree_node = @root, arr = [])
-    return [] unless tree_node # add nothing to results array
+    return [] unless tree_node # add nothing to results array if node is empty
 
     if tree_node.left
       arr += in_order_traversal(tree_node.left)
     end
 
+    # record value of the current root after left transversal and
+    # before you push in the right nodes (always larger)
    arr << tree_node.value
 
    if tree_node.right
