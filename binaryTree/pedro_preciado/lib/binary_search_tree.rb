@@ -31,7 +31,43 @@ class BinarySearchTree
   end
 
   def delete(value)
-    @root = find_and_delete(value, @root)
+    node = find(value, @root)
+    parent = parent(node.value, @root) unless node == @root
+
+    if node.left.nil? && node.right.nil?
+      return @root = nil if node == @root
+      if parent.left.value == node.value
+        parent.left = nil
+      elsif parent.right.value == node.value
+        parent.right = nil
+      end
+    elsif node.left && node.right
+      max = maximum(node.left)
+      parent_of_max = parent(max.value, @root)
+
+      if node.value < parent.value
+        parent.left = max
+      elsif node.value > parent.value
+        parent.right = max
+      end
+
+      parent_of_max.right = max.left
+
+    elsif node.left && node.right.nil?
+      if parent.left.value == node.value
+        parent.left = node.left
+      elsif parent.right.value == node.value
+        parent.right = node.left
+      end
+    elsif node.right && node.left.nil?
+      if parent.left.value == node.value
+        parent.left = node.right
+      elsif parent.right.value == node.value
+        parent.right = node.right
+      end
+    end
+
+
   end
 
   # helper method for #delete:
@@ -79,22 +115,21 @@ class BinarySearchTree
 
 
   private
-  def find_and_delete(value, tree_node)
-    return tree_node unless tree_node
-    if tree_node.value == value && tree_node.left.nil? && tree_node.right.nil?
-      return nil
-    elsif tree_node.right && tree_node.left.nil?
-      tree_node = find_and_delete(value, tree_node.right) if tree_node.right
-      return tree_node
-    elsif tree_node.left && tree_node.right.nil?
-      tree_node = find_and_delete(value, tree_node.left) if tree_node.left
-      return tree_node
-    else
-      tree_node = find_and_delete(value, tree_node.left)
-      return tree_node
+
+  def parent(value, root = @root)
+    p root
+    if root.left.value == value
+      return root
+    elsif root.right.value == value
+      return root
+    end
+
+    if root.value > value
+      return parent(value, root.left)
+    elsif root.value < value
+      return parent(value, root.right)
     end
   end
-
   # optional helper methods go here:
   def self.set_parent(subtree, value)
     return BSTNode.new(value) if !subtree
